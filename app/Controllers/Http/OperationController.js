@@ -57,7 +57,8 @@ class OperationController {
       "tax",
       "return_profit",
       "id_adm",
-      "date_operation"
+      "date_operation",
+      "direction"
     ]);
     const operation = await Operation.create(data);
 
