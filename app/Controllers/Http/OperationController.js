@@ -58,7 +58,8 @@ class OperationController {
       "return_profit",
       "id_adm",
       "date_operation",
-      "direction"
+      "direction",
+      "id_user"
     ]);
     const operation = await Operation.create(data);
 

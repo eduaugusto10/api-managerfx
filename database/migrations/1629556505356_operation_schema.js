@@ -20,6 +20,7 @@ class OperationSchema extends Schema {
       table.string("id_adm", 60);
       table.integer("direction");
       table.dateTime("date_operation");
+      table.integer("id_user");
       table.timestamps();
     });
   }
