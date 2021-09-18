@@ -46,20 +46,18 @@ class OperationController {
    */
   async store({ request, response }) {
     const data = request.only([
-      "Symbol",
+      "symbol",
       "operation_type",
       "price_open",
+      "price_close",
       "comission",
       "swap",
-      "lot",
-      "takeprofit",
-      "stoploss",
       "tax",
       "return_profit",
       "id_adm",
-      "date_operation",
-      "direction",
-      "id_user"
+      "date_open",
+      "date_close",
+      "id_user",
     ]);
     const operation = await Operation.create(data);
 
