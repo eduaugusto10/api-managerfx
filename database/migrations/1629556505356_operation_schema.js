@@ -9,7 +9,7 @@ class OperationSchema extends Schema {
       table.increments();
       table.string("Symbol", 60);
       table.string("operation_type", 60);
-      table.string("price_ope", 60);
+      table.string("price_open", 60);
       table.string("comission", 60);
       table.string("swap", 60);
       table.string("lot", 60);
