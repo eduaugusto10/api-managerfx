@@ -1,6 +1,6 @@
 "use strict";
 
-const Operation = require('../../Models/Operation');
+const Operation = require("../../Models/Operation");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -19,7 +19,11 @@ class OperationController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index({ request, response, view }) {}
+  async index() {
+    const operation = await Operation.all();
+
+    return operation;
+  }
 
   /**
    * Render a form to be used for creating a new operation.
@@ -31,6 +35,18 @@ class OperationController {
    * @param {View} ctx.view
    */
   async create({ request, response, view }) {
+
+  }
+
+  /**
+   * Create/save a new operation.
+   * POST operations
+   *
+   * @param {object} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async store({ request, response }) {
     const data = request.only([
       "Symbol",
       "operation_type",
@@ -43,22 +59,12 @@ class OperationController {
       "tax",
       "return_profit",
       "id_adm",
-      "date_operation"
+      "date_operation",
     ]);
     const operation = await Operation.create(data);
 
     return operation;
   }
-
-  /**
-   * Create/save a new operation.
-   * POST operations
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
-  async store({ request, response }) {}
 
   /**
    * Display a single operation.

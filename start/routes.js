@@ -9,4 +9,4 @@ Route.get("/", () => {
 
 Route.post("/users", "UserController.create");
 Route.post("/sessions", "SessionController.create");
-Route.post("/operationsave", "OperationController.create");
+Route.post("/operationsave", "OperationController.store");
