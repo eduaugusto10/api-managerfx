@@ -7,7 +7,7 @@ class OperationSchema extends Schema {
   up() {
     this.create("operations", (table) => {
       table.increments();
-      table.string("Symbol", 60);
+      table.string("symbol", 60);
       table.string("operation_type", 60);
       table.string("price_open", 60);
       table.string("comission", 60);

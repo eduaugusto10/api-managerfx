@@ -1,6 +1,6 @@
 "use strict";
 
-const Operation = require("../../Models/Operation");
+const Operation = use("App/Models/Operation");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -34,9 +34,7 @@ class OperationController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create({ request, response, view }) {
-
-  }
+  async create({ request, response, view }) {}
 
   /**
    * Create/save a new operation.
@@ -59,7 +57,7 @@ class OperationController {
       "tax",
       "return_profit",
       "id_adm",
-      "date_operation",
+      "date_operation"
     ]);
     const operation = await Operation.create(data);
 
