@@ -1,5 +1,7 @@
 "use strict";
 
+const Operation = require('../../Models/Operation');
+
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
@@ -43,6 +45,9 @@ class OperationController {
       "id_adm",
       "date_operation"
     ]);
+    const operation = await Operation.create(data);
+
+    return operation;
   }
 
   /**
