@@ -67,7 +67,7 @@ class DepositController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    const limit = 10;
+    const limit = 20;
     const deposit = await Deposit.query()
       .where("id_cliente", params.id_cliente)
       .paginate(params.page, limit);
