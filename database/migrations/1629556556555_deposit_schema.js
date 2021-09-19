@@ -7,9 +7,9 @@ class DepositSchema extends Schema {
   up () {
     this.create('deposits', (table) => {
       table.increments()
-      table.string('id_cliente',60)
+      table.integer('id_cliente')
       table.string('deposit_value',60)
-      table.string('date_deposit',60)
+      table.dateTime('deposit_date')
       table.timestamps()
     })
   }

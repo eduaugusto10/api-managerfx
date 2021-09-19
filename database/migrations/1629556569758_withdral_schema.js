@@ -9,7 +9,7 @@ class WithdralSchema extends Schema {
       table.increments()
       table.string('id_cliente',60)
       table.string('withdrawal_value',60)
-      table.string('date_withdrawal',60)
+      table.dateTime('date_withdrawal')
       table.timestamps()
     })
   }

@@ -1,4 +1,6 @@
-'use strict'
+"use strict";
+
+const Deposit = use("App/Models/Deposit");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -17,7 +19,10 @@ class DepositController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
+  async index({ request, response, view }) {
+    const deposit = await Deposit.all();
+
+    return deposit;
   }
 
   /**
@@ -29,8 +34,7 @@ class DepositController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async create ({ request, response, view }) {
-  }
+  async create({ request, response, view }) {}
 
   /**
    * Create/save a new deposit.
@@ -40,7 +44,12 @@ class DepositController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store ({ request, response }) {
+  async store({ request, response }) {
+    const data = request.only(["id_cliente", "deposit_value", "deposit_date"]);
+
+    const deposit = await Deposit.create(data);
+
+    return deposit;
   }
 
   /**
@@ -52,7 +61,10 @@ class DepositController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
+  async show({ params, request, response, view }) {
+    const deposit = await Deposit.findOrFail(params.id);
+
+    return deposit;
   }
 
   /**
@@ -64,8 +76,7 @@ class DepositController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
-  async edit ({ params, request, response, view }) {
-  }
+  async edit({ params, request, response, view }) {}
 
   /**
    * Update deposit details.
@@ -75,8 +86,7 @@ class DepositController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update ({ params, request, response }) {
-  }
+  async update({ params, request, response }) {}
 
   /**
    * Delete a deposit with id.
@@ -86,8 +96,7 @@ class DepositController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy ({ params, request, response }) {
-  }
+  async destroy({ params, request, response }) {}
 }
 
-module.exports = DepositController
+module.exports = DepositController;

@@ -11,3 +11,4 @@ Route.post("/users", "UserController.create");
 Route.post("/sessions", "SessionController.create");
 
 Route.resource("operationsave", "OperationController").apiOnly();
+Route.resource("deposit", "DepositController").apiOnly();
