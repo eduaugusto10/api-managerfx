@@ -45,7 +45,12 @@ class DepositController {
    * @param {Response} ctx.response
    */
   async store({ request, response }) {
-    const data = request.only(["id_cliente", "deposit_value", "deposit_date","type_operation"]);
+    const data = request.only([
+      "id_cliente",
+      "deposit_value",
+      "deposit_date",
+      "type_operation",
+    ]);
 
     const deposit = await Deposit.create(data);
 
@@ -62,8 +67,10 @@ class DepositController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-
-    const deposit = await Deposit.query().where('id_cliente', params.id_cliente).fetch()
+    const limit = 10;
+    const deposit = await Deposit.query()
+      .where("id_cliente", params.id_cliente)
+      .paginate(params.page, limit);
     return deposit;
   }
 

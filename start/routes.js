@@ -12,6 +12,6 @@ Route.post("/sessions", "SessionController.create");
 
 Route.resource("operationsave", "OperationController").apiOnly();
 //Route.resource("deposit", "DepositController").apiOnly();
-Route.get("/deposit/:id_cliente", "DepositController.show");
+Route.get("/deposit/:id_cliente?page=:page", "DepositController.show");
 Route.get("/deposit/", "DepositController.index");
 Route.post("/deposit", "DepositController.store");
