@@ -62,8 +62,8 @@ class DepositController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
-    const deposit = await Deposit.findOrFail(params.id);
 
+    const deposit = await Deposit.query().where('id_cliente', params.id_cliente).fetch()
     return deposit;
   }
 
