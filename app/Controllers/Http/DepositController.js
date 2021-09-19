@@ -45,7 +45,7 @@ class DepositController {
    * @param {Response} ctx.response
    */
   async store({ request, response }) {
-    const data = request.only(["id_cliente", "deposit_value", "deposit_date"]);
+    const data = request.only(["id_cliente", "deposit_value", "deposit_date","type_operation"]);
 
     const deposit = await Deposit.create(data);
 
