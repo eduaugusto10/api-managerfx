@@ -10,7 +10,7 @@ class DepositSchema extends Schema {
       table.integer('id_cliente')
       table.string('deposit_value',60)
       table.dateTime('deposit_date')
-      table.integer('type_oeration')//0 Deposit, 1 Platform, 2 Withdraw
+      table.integer('type_operation')//0 Deposit, 1 Platform, 2 Withdraw
       table.timestamps()
     })
   }
