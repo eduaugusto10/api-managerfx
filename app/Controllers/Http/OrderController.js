@@ -52,6 +52,7 @@ class OrderController {
       "id_adm",
       "date",
       "calculated",
+      "id_user",
     ]);
     const order = await Order.create(data);
 
