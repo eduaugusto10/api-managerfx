@@ -15,3 +15,6 @@ Route.resource("operationsave", "OperationController").apiOnly();
 Route.get("/deposit/:id_cliente?page=:page", "DepositController.show");
 Route.get("/deposit/", "DepositController.index");
 Route.post("/deposit", "DepositController.store");
+
+Route.get("/order", "OrderController.show");
+Route.post("/order", "OrderController.store");
