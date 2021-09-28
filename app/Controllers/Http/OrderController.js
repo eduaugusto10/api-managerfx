@@ -55,7 +55,10 @@ class OrderController {
       "id_user",
     ]);
     const order = await Order.create(data);
-
+    console.log(request.return_profit);
+    //percentual = (deposito/banca) * 100
+    //banca = banca + comission + swap + return_profit
+    //%banca = banca * percentual
     return order;
   }
 
@@ -74,7 +77,6 @@ class OrderController {
       .orderBy("id", "desc")
       .limit(limit)
       .fetch();
-
     return order;
   }
 
