@@ -1,6 +1,7 @@
 "use strict";
 
 const Order = use("App/Models/Order");
+const Balance = use("App/Models/Balance");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -56,6 +57,13 @@ class OrderController {
     ]);
     const order = await Order.create(data);
     console.log(request.return_profit);
+
+    const data = (["ticket"=request.order_id,
+    "date_operation"=request.date,
+    "banca"="400",
+    "nr_participants"=2]);
+    const balance = await Balance.create(data);
+
     //percentual = (deposito/banca) * 100
     //banca = banca + comission + swap + return_profit
     //%banca = banca * percentual
