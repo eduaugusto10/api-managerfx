@@ -18,3 +18,6 @@ Route.post("/deposit", "DepositController.store");
 
 Route.get("/order", "OrderController.show");
 Route.post("/order", "OrderController.store");
+
+
+Route.get("/balance/:id_user?page=:page", "BalanceController.show");
