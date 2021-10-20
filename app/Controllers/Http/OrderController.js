@@ -2,6 +2,7 @@
 
 const Order = use("App/Models/Order");
 const Balance = use("App/Models/Balance");
+const Counter = use("App/Models/Counter");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -62,15 +63,27 @@ class OrderController {
     let lastOrder = await this.show();
     lastOrder = JSON.parse(JSON.stringify(lastOrder))[0];
     console.log(lastOrder);
-    console.log("========================");
     console.log(
       "=============== Últimas Ordens pela mesma data ================"
     );
+    /* Verifica quantos usuarios aquele administrador tem
+     ** necessario para nao ficar duplicando ordens na tabela Balanço */
+    let limits = await Counter.query()
+      .where("adm_nr", request.body.id_adm)
+      .orderBy("id", "desc")
+      .limit(1)
+      .fetch();
+    limits = JSON.parse(JSON.stringify(limits))[0];
+    const newLimit = limits === undefined ? 0 : limits.qty_users;
+    limits = limits === undefined ? 1 : newLimit;
+    console.log("Quantidade de usuario por esse adm: ", limits);
+
     let lastOrders = undefined;
     if (lastOrder !== undefined) {
       lastOrders = await Balance.query()
         .where("date_operation", new Date(lastOrder.date))
         .orderBy("id", "desc")
+        .limit(limits)
         .fetch();
 
       lastOrders = JSON.parse(JSON.stringify(lastOrders));
@@ -79,10 +92,13 @@ class OrderController {
     }
     const lastOrdersLength = lastOrders.length;
     console.log("========================");
-    /*Criar a nova ordem no banco de dados */
+    /*Criar a nova ordem no banco de dados ORDER*/
     const order = await Order.create(data);
 
     //Depositando dinheiro na banca
+    /* Se tipo de operação estiver igual a dois, quer dizer que é sobre o balanço
+     ** então poderá ser deposito, retirada, ajuste com a corretora
+     */
     let new_users = "";
     if (request.body.operation_type == 2) {
       //não é ordem de entrada na operação
@@ -119,7 +135,15 @@ class OrderController {
       };
       console.log("Entrada 1");
       const balance = await Balance.create(datas);
+      const dataCounter = {
+        adm_nr: request.body.id_adm,
+        qty_users: newLimit + 1,
+      };
 
+      /*Caso não encontrou usuario então vai contar +1 na tabela counter*/
+      new_usersWhitou.length === 0 ? await Counter.create(dataCounter) : null;
+
+      /*Bloco abaixo é só para colocar todos os usuários na mesma data*/
       for (let i = 0; i < lastOrdersLength; i++) {
         console.log("ID: ", lastOrders[i].id_user);
         if (request.body.id_user !== lastOrders[i].id_user) {
@@ -147,7 +171,11 @@ class OrderController {
         }
       }
     }
+
+    /*Operation type abaixo de 2 significa compra ou venda (abertura de ordem)*/
     if (request.body.operation_type < 2) {
+
+      /*Verifica se a ordem existe */
       let orderSearch = await Balance.query()
         .where("ticket", request.body.order_id)
         .orderBy("id", "desc")
@@ -171,8 +199,8 @@ class OrderController {
           const datas = {
             ticket: request.body.order_id,
             date_operation: request.body.date,
-            banca: lastOrders[i].percentual * newTotalBanca,
-            banca_total: newTotalBanca,
+            banca: (lastOrders[i].percentual * newTotalBanca).toFixed(2),
+            banca_total: newTotalBanca.toFixed(2),
             percentual: lastOrders[i].percentual,
             id_user: lastOrders[i].id_user,
           };
@@ -189,7 +217,7 @@ class OrderController {
             parseFloat(request.body.tax) +
             parseFloat(request.body.return_profit);
           for (let j = 0; j < orderSearchLength; j++) {
-            if (lastOrders[i].id_user == orderSearch[j].id_user) {
+            if (lastOrders[i].id_user === orderSearch[j].id_user) {
               const newValueOrder =
                 parseFloat(request.body.comission) +
                 parseFloat(request.body.swap) +
@@ -199,17 +227,19 @@ class OrderController {
               const datas = {
                 ticket: request.body.order_id,
                 date_operation: request.body.date,
-                banca:
-                  orderSearch[j].percentual * newValueOrder +
-                  lastOrders[i].banca,
-                banca_total: newTotalBanca,
+                banca: (
+                  parseFloat(orderSearch[j].percentual) * newValueOrder +
+                  parseFloat(lastOrders[i].banca)
+                ).toFixed(2),
+                banca_total: newTotalBanca.toFixed(2),
                 percentual:
-                  (orderSearch[j].percentual * newValueOrder +
-                    lastOrders[i].banca) /
+                  (parseFloat(orderSearch[j].percentual) * newValueOrder +
+                    parseFloat(lastOrders[i].banca)) /
                   newTotalBanca,
                 id_user: lastOrders[i].id_user,
               };
               console.log("Fechamento de Ordem com alteração");
+              console.log(datas);
               flagFound = false;
               const balance = await Balance.create(datas);
             }

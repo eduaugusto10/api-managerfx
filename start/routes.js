@@ -21,3 +21,8 @@ Route.post("/order", "OrderController.store");
 
 
 Route.get("/balance/:id_user?page=:page", "BalanceController.show");
+
+
+Route.get("/counter/:adm_nr", "CounterController.show");
+Route.get("/counters/:adm_nr", "CounterController.shows");
+Route.post("/counter", "CounterController.store");
