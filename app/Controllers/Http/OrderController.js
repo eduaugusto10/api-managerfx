@@ -124,13 +124,14 @@ class OrderController {
           (lastOrders[0] !== undefined
             ? parseFloat(lastOrders[0].banca_total)
             : 0) + parseFloat(request.body.return_profit),
-        percentual:
+        percentual: (
           ((new_users !== undefined ? parseFloat(new_users.banca) : 0) +
             parseFloat(request.body.return_profit)) /
           ((lastOrders[0] !== undefined
             ? parseFloat(lastOrders[0].banca_total)
             : 0) +
-            parseFloat(request.body.return_profit)),
+            parseFloat(request.body.return_profit))
+        ).toFixed(6),
         id_user: request.body.id_user,
       };
       console.log("Entrada 1");
@@ -156,14 +157,15 @@ class OrderController {
               (lastOrders[i] !== undefined
                 ? parseFloat(lastOrders[i].banca_total)
                 : 0) + parseFloat(request.body.return_profit),
-            percentual:
+            percentual: (
               (lastOrders[i] !== undefined
                 ? parseFloat(lastOrders[i].banca)
                 : 0) /
               ((lastOrders[i] !== undefined
                 ? parseFloat(lastOrders[i].banca_total)
                 : 0) +
-                parseFloat(request.body.return_profit)),
+                parseFloat(request.body.return_profit))
+            ).toFixed(6),
             id_user: lastOrders[i].id_user,
           };
           console.log("Entrada 2");
@@ -174,7 +176,6 @@ class OrderController {
 
     /*Operation type abaixo de 2 significa compra ou venda (abertura de ordem)*/
     if (request.body.operation_type < 2) {
-
       /*Verifica se a ordem existe */
       let orderSearch = await Balance.query()
         .where("ticket", request.body.order_id)
@@ -187,6 +188,8 @@ class OrderController {
       console.log(orderSearch);
       console.log("Tamanho do array: ", orderSearch.length);
       console.log("=======================");
+
+      /**Abertura de ordem */
       if (orderSearchLength < 1) {
         for (let i = 0; i < lastOrdersLength; i++) {
           const newTotalBanca =
@@ -201,13 +204,14 @@ class OrderController {
             date_operation: request.body.date,
             banca: (lastOrders[i].percentual * newTotalBanca).toFixed(2),
             banca_total: newTotalBanca.toFixed(2),
-            percentual: lastOrders[i].percentual,
+            percentual: parseFloat(lastOrders[i].percentual).toFixed(6),
             id_user: lastOrders[i].id_user,
           };
           console.log("Nova Ordem");
           const balance = await Balance.create(datas);
         }
       } else {
+        /** Encerramento de ordem */
         for (let i = 0; i < lastOrdersLength; i++) {
           let flagFound = true;
           const newTotalBanca =
@@ -218,11 +222,21 @@ class OrderController {
             parseFloat(request.body.return_profit);
           for (let j = 0; j < orderSearchLength; j++) {
             if (lastOrders[i].id_user === orderSearch[j].id_user) {
-              const newValueOrder =
-                parseFloat(request.body.comission) +
-                parseFloat(request.body.swap) +
-                parseFloat(request.body.tax) +
-                parseFloat(request.body.return_profit);
+              let newValueOrder = 0;
+              orderSearch[j].id_user != request.body.id_adm
+                ? (newValueOrder =
+                    (parseFloat(request.body.comission) +
+                      parseFloat(request.body.swap) +
+                      parseFloat(request.body.tax) +
+                      parseFloat(request.body.return_profit)) *
+                    0.75)
+                : (newValueOrder =
+                    (parseFloat(request.body.comission) +
+                      parseFloat(request.body.swap) +
+                      parseFloat(request.body.tax) +
+                      parseFloat(request.body.return_profit)) *
+                    (limits > 1 ? 1.2 : 1));
+
               console.log("ID: ", lastOrders[i].id_user);
               const datas = {
                 ticket: request.body.order_id,
@@ -232,10 +246,11 @@ class OrderController {
                   parseFloat(lastOrders[i].banca)
                 ).toFixed(2),
                 banca_total: newTotalBanca.toFixed(2),
-                percentual:
+                percentual: (
                   (parseFloat(orderSearch[j].percentual) * newValueOrder +
                     parseFloat(lastOrders[i].banca)) /
-                  newTotalBanca,
+                  newTotalBanca
+                ).toFixed(6),
                 id_user: lastOrders[i].id_user,
               };
               console.log("Fechamento de Ordem com alteração");
