@@ -66,6 +66,130 @@ class OrderController {
     console.log(
       "=============== Últimas Ordens pela mesma data ================"
     );
+    let dayLastOrder = new Date(lastOrder.date);
+    let dayActualOrder = new Date(request.body.date);
+
+    const monthDayLastOrder = ("0" + (dayLastOrder.getMonth() + 1)).slice(-2);
+    const dayDayLastOrder = ("0" + dayLastOrder.getDate()).slice(-2);
+    const yearDayLastOrder = dayLastOrder.getFullYear();
+
+    const monthdayActualOrder = ("0" + (dayActualOrder.getMonth() + 1)).slice(
+      -2
+    );
+    const daydayActualOrder = ("0" + dayActualOrder.getDate()).slice(-2);
+    const yeardayActualOrder = dayActualOrder.getFullYear();
+
+    const actualDayOrder =
+      yeardayActualOrder + "-" + monthdayActualOrder + "-" + daydayActualOrder;
+    const lastDayOrder =
+      yearDayLastOrder + "-" + monthDayLastOrder + "-" + dayDayLastOrder;
+
+    if (actualDayOrder != lastDayOrder) {
+      const balance = await Balance.query()
+        .whereBetween("date_operation", [
+          `${lastDayOrder} 00:00:00`,
+          `${lastDayOrder} 23:59:59`,
+        ])
+        .orderBy("id", "asc")
+        .fetch();
+
+      const balanceJSON = JSON.parse(JSON.stringify(balance));
+      const ordensLength = balanceJSON.length;
+      let ganhoDia = 0;
+
+      let listaID = [];
+      for (let i = 0; i < ordensLength; i++) {
+        listaID[i] = balanceJSON[i].id_user;
+      }
+      let listaIDs = [...new Set(listaID)];
+      console.log(listaIDs.sort());
+      let ganhoDiaAdm = 0;
+      for (let i = 0; i < listaIDs.length; i++) {
+        let idNumber = 0;
+        let flagNew = false;
+        for (let j = 0; j < ordensLength; j++) {
+          if (
+            listaIDs[i] === balanceJSON[j].id_user &&
+            balanceJSON[j].id_user != 1140
+          ) {
+            ganhoDia = ganhoDia + parseFloat(balanceJSON[j].lucro) * 0.25;
+            ganhoDiaAdm = ganhoDiaAdm + parseFloat(balanceJSON[j].lucro) * 0.25;
+            console.log("Lucro: ", parseFloat(balanceJSON[j].lucro));
+            idNumber = j;
+            flagNew = true;
+          }
+        }
+
+        if (balanceJSON[idNumber].id_user != 1140 && flagNew == true) {
+          console.log(
+            "ID: ",
+            balanceJSON[idNumber].id_user + " Ganho:" + ganhoDia
+          );
+          const datas = {
+            ticket: 0,
+            date_operation: `${lastDayOrder} 23:59:59`,
+            banca: (parseFloat(balanceJSON[idNumber].banca) - ganhoDia).toFixed(
+              3
+            ),
+            banca_total: balanceJSON[idNumber].banca_total,
+            percentual: (
+              (parseFloat(balanceJSON[idNumber].banca) - parseFloat(ganhoDia)) /
+              parseFloat(balanceJSON[idNumber].banca_total)
+            ).toFixed(5),
+            lucro: 0,
+            id_user: balanceJSON[idNumber].id_user,
+          };
+          console.log("Balanço Final do Dia");
+          console.log(datas);
+          const balance = await Balance.create(datas);
+          ganhoDia = 0;
+          flagNew = false;
+        }
+      }
+      let datas = [];
+      for (let i = 0; i < ordensLength; i++) {
+        if (balanceJSON[i].id_user == 1140) {
+          console.log("ID: ", balanceJSON[i].id_user);
+          datas = {
+            ticket: 0,
+            date_operation: `${lastDayOrder} 23:59:59`,
+            banca: (
+              parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)
+            ).toFixed(3),
+            banca_total: balanceJSON[i].banca_total,
+            percentual: (
+              (parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)) /
+              parseFloat(balanceJSON[i].banca_total)
+            ).toFixed(5),
+            lucro: 0,
+            id_user: balanceJSON[i].id_user,
+          };
+          console.log("Balanço Final do Dia");
+          console.log(datas);
+          ganhoDia = 0;
+        }
+      }
+      await Balance.create(datas);
+      const data = {
+        order_id: 0,
+        symbol: 0,
+        operation_type: 0,
+        comission: 0,
+        swap: 0,
+        tax: 0,
+        return_profit: 0,
+        id_adm: 0,
+        date: new Date(`${lastDayOrder} 23:59:59`),
+        calculated: 0,
+        id_user: 0,
+      };
+
+      const order = await Order.create(data);
+
+      lastOrder = await this.show();
+      lastOrder = JSON.parse(JSON.stringify(lastOrder))[0];
+    }
+
     /* Verifica quantos usuarios aquele administrador tem
      ** necessario para nao ficar duplicando ordens na tabela Balanço */
     let limits = await Counter.query()
@@ -87,6 +211,7 @@ class OrderController {
         .fetch();
 
       lastOrders = JSON.parse(JSON.stringify(lastOrders));
+      console.log("Ordens do Mesmo dia");
       console.log(lastOrders);
       console.log("Tamanho array ", lastOrders.length);
     }
@@ -116,7 +241,7 @@ class OrderController {
       console.log("========================");
       const datas = {
         ticket: request.body.order_id,
-        date_operation: request.body.date,
+        date_operation: new Date(request.body.date),
         banca:
           (new_users !== undefined ? parseFloat(new_users.banca) : 0) +
           parseFloat(request.body.return_profit),
@@ -131,7 +256,8 @@ class OrderController {
             ? parseFloat(lastOrders[0].banca_total)
             : 0) +
             parseFloat(request.body.return_profit))
-        ).toFixed(6),
+        ).toFixed(5),
+        lucro: 0,
         id_user: request.body.id_user,
       };
       console.log("Entrada 1");
@@ -150,7 +276,7 @@ class OrderController {
         if (request.body.id_user !== lastOrders[i].id_user) {
           const datas = {
             ticket: request.body.order_id,
-            date_operation: request.body.date,
+            date_operation: new Date(request.body.date),
             banca:
               lastOrders[i] !== undefined ? parseFloat(lastOrders[i].banca) : 0,
             banca_total:
@@ -165,7 +291,8 @@ class OrderController {
                 ? parseFloat(lastOrders[i].banca_total)
                 : 0) +
                 parseFloat(request.body.return_profit))
-            ).toFixed(6),
+            ).toFixed(5),
+            lucro: 0,
             id_user: lastOrders[i].id_user,
           };
           console.log("Entrada 2");
@@ -201,10 +328,11 @@ class OrderController {
           console.log("ID: ", lastOrders[i].id_user);
           const datas = {
             ticket: request.body.order_id,
-            date_operation: request.body.date,
-            banca: (lastOrders[i].percentual * newTotalBanca).toFixed(2),
-            banca_total: newTotalBanca.toFixed(2),
-            percentual: parseFloat(lastOrders[i].percentual).toFixed(6),
+            date_operation: new Date(request.body.date),
+            banca: (lastOrders[i].percentual * newTotalBanca).toFixed(3),
+            banca_total: newTotalBanca.toFixed(3),
+            percentual: parseFloat(lastOrders[i].percentual).toFixed(5),
+            lucro: 0,
             id_user: lastOrders[i].id_user,
           };
           console.log("Nova Ordem");
@@ -222,35 +350,36 @@ class OrderController {
             parseFloat(request.body.return_profit);
           for (let j = 0; j < orderSearchLength; j++) {
             if (lastOrders[i].id_user === orderSearch[j].id_user) {
-              let newValueOrder = 0;
-              orderSearch[j].id_user != request.body.id_adm
-                ? (newValueOrder =
-                    (parseFloat(request.body.comission) +
-                      parseFloat(request.body.swap) +
-                      parseFloat(request.body.tax) +
-                      parseFloat(request.body.return_profit)) *
-                    0.75)
-                : (newValueOrder =
-                    (parseFloat(request.body.comission) +
-                      parseFloat(request.body.swap) +
-                      parseFloat(request.body.tax) +
-                      parseFloat(request.body.return_profit)) *
-                    (limits > 1 ? 1.2 : 1));
+              const newValueOrder =
+                parseFloat(request.body.comission) +
+                parseFloat(request.body.swap) +
+                parseFloat(request.body.tax) +
+                parseFloat(request.body.return_profit);
 
               console.log("ID: ", lastOrders[i].id_user);
               const datas = {
                 ticket: request.body.order_id,
-                date_operation: request.body.date,
+                date_operation: new Date(request.body.date),
                 banca: (
                   parseFloat(orderSearch[j].percentual) * newValueOrder +
                   parseFloat(lastOrders[i].banca)
-                ).toFixed(2),
-                banca_total: newTotalBanca.toFixed(2),
+                ).toFixed(3),
+                banca_total: newTotalBanca.toFixed(3),
                 percentual: (
                   (parseFloat(orderSearch[j].percentual) * newValueOrder +
                     parseFloat(lastOrders[i].banca)) /
                   newTotalBanca
-                ).toFixed(6),
+                ).toFixed(5),
+                lucro: (
+                  parseFloat(request.body.return_profit) *
+                  (parseFloat(orderSearch[j].percentual) !== 1
+                    ? (
+                        (parseFloat(orderSearch[j].percentual) * newValueOrder +
+                          parseFloat(lastOrders[i].banca)) /
+                        newTotalBanca
+                      ).toFixed(6)
+                    : 1)
+                ).toFixed(3),
                 id_user: lastOrders[i].id_user,
               };
               console.log("Fechamento de Ordem com alteração");
@@ -263,10 +392,17 @@ class OrderController {
             console.log("ID: ", lastOrders[i].id_user);
             const datas = {
               ticket: 0,
-              date_operation: request.body.date,
+              date_operation: new Date(request.body.date),
               banca: lastOrders[i].banca,
               banca_total: newTotalBanca,
-              percentual: lastOrders[i].banca / newTotalBanca,
+              percentual: (
+                parseFloat(lastOrders[i].banca).toFixed(5) /
+                parseFloat(newTotalBanca).toFixed(5)
+              ).toFixed(5),
+              lucro: (
+                parseFloat(request.body.return_profit) *
+                (lastOrders[i].banca / newTotalBanca)
+              ).toFixed(2),
               id_user: lastOrders[i].id_user,
             };
             console.log("Fechamento de Ordem sem alteração");

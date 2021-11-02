@@ -10,6 +10,7 @@ class BalanceSchema extends Schema {
       table.integer("ticket");
       table.dateTime("date_operation");
       table.string("banca");
+      table.string("lucro");
       table.string("banca_total");
       table.integer("id_user");
       table.string("percentual");
