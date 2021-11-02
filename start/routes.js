@@ -20,6 +20,7 @@ Route.get("/order", "OrderController.show");
 Route.post("/order", "OrderController.store");
 
 Route.get("/balance/:id_user?page=:page", "BalanceController.show");
+Route.get("/balancehome/:id_user", "BalanceController.balanceHome");
 Route.get("/fetching", "BalanceController.fetching");
 
 Route.get("/counter/:adm_nr", "CounterController.show");

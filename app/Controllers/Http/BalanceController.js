@@ -55,7 +55,7 @@ class BalanceController {
   }
 
   async fetching(todays) {
-    console.log("Chegou ate aqui!")
+    console.log("Chegou ate aqui!");
     let today = new Date(todays);
     const month = ("0" + (today.getMonth() + 1)).slice(-2);
     const day = ("0" + dayLastOrder.getDate()).slice(-2);
@@ -170,6 +170,18 @@ class BalanceController {
     return { ordensLength, balanceJSON };
   }
 
+  async balanceHome({ params, request, response, view }) {
+    const limit = 1;
+    const balances = await Balance.query()
+      .where("id_user", params.id_user)
+      .orderBy("id", "desc")
+      .limit(1)
+      .fetch();
+    let balance = JSON.parse(JSON.stringify(balances))[0];
+    balance = JSON.parse(JSON.stringify(balance));
+
+    return balance;
+  }
   /**
    * Display a single balance.
    * GET balances/:id
