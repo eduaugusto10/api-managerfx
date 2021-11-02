@@ -184,8 +184,10 @@ class BalanceController {
       .andWhere("operation_type", "2")
       .orderBy("id", "desc")
       .fetch();
+      let balanceCapital = JSON.parse(JSON.stringify(balancesCapital));
+      balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
 
-    return { balancesCapital, balance };
+    return { balanceCapital, balance };
   }
   /**
    * Display a single balance.
