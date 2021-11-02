@@ -175,12 +175,17 @@ class BalanceController {
     const balances = await Balance.query()
       .where("id_user", params.id_user)
       .orderBy("id", "desc")
-      .limit(1)
+      .limit(limit)
       .fetch();
     let balance = JSON.parse(JSON.stringify(balances))[0];
     balance = JSON.parse(JSON.stringify(balance));
+    const balancesCapital = await Order.query()
+      .where("id_user", params.id_user)
+      .andWhere("operation_type", "2")
+      .orderBy("id", "desc")
+      .fetch();
 
-    return balance;
+    return { balancesCapital, balance };
   }
   /**
    * Display a single balance.
