@@ -48,16 +48,13 @@ class OperationController {
     const data = request.only([
       "symbol",
       "operation_type",
-      "price_open",
-      "price_close",
       "comission",
       "swap",
       "tax",
       "return_profit",
       "id_adm",
       "date_open",
-      "date_close",
-      "id_user",
+      "ticket",
     ]);
     const operation = await Operation.create(data);
 

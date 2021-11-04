@@ -135,7 +135,7 @@ class OrderController {
             percentual: (
               (parseFloat(balanceJSON[idNumber].banca) - parseFloat(ganhoDia)) /
               parseFloat(balanceJSON[idNumber].banca_total)
-            ).toFixed(5),
+            ).toFixed(15),
             lucro: 0,
             id_user: balanceJSON[idNumber].id_user,
           };
@@ -155,12 +155,12 @@ class OrderController {
             date_operation: `${lastDayOrder} 23:59:59`,
             banca: (
               parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)
-            ).toFixed(3),
+            ).toFixed(2),
             banca_total: balanceJSON[i].banca_total,
             percentual: (
               (parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)) /
               parseFloat(balanceJSON[i].banca_total)
-            ).toFixed(5),
+            ).toFixed(15),
             lucro: 0,
             id_user: balanceJSON[i].id_user,
           };
@@ -256,7 +256,7 @@ class OrderController {
             ? parseFloat(lastOrders[0].banca_total)
             : 0) +
             parseFloat(request.body.return_profit))
-        ).toFixed(5),
+        ).toFixed(15),
         lucro: 0,
         id_user: request.body.id_user,
       };
@@ -291,7 +291,7 @@ class OrderController {
                 ? parseFloat(lastOrders[i].banca_total)
                 : 0) +
                 parseFloat(request.body.return_profit))
-            ).toFixed(5),
+            ).toFixed(15),
             lucro: 0,
             id_user: lastOrders[i].id_user,
           };
@@ -329,9 +329,9 @@ class OrderController {
           const datas = {
             ticket: request.body.order_id,
             date_operation: new Date(request.body.date),
-            banca: (lastOrders[i].percentual * newTotalBanca).toFixed(3),
-            banca_total: newTotalBanca.toFixed(3),
-            percentual: parseFloat(lastOrders[i].percentual).toFixed(5),
+            banca: (lastOrders[i].percentual * newTotalBanca).toFixed(2),
+            banca_total: newTotalBanca.toFixed(2),
+            percentual: parseFloat(lastOrders[i].percentual).toFixed(15),
             lucro: 0,
             id_user: lastOrders[i].id_user,
           };
@@ -363,13 +363,13 @@ class OrderController {
                 banca: (
                   parseFloat(orderSearch[j].percentual) * newValueOrder +
                   parseFloat(lastOrders[i].banca)
-                ).toFixed(3),
-                banca_total: newTotalBanca.toFixed(3),
+                ).toFixed(2),
+                banca_total: newTotalBanca.toFixed(2),
                 percentual: (
                   (parseFloat(orderSearch[j].percentual) * newValueOrder +
                     parseFloat(lastOrders[i].banca)) /
                   newTotalBanca
-                ).toFixed(5),
+                ).toFixed(15),
                 lucro: (
                   parseFloat(request.body.return_profit) *
                   (parseFloat(orderSearch[j].percentual) !== 1
@@ -379,7 +379,7 @@ class OrderController {
                         newTotalBanca
                       ).toFixed(6)
                     : 1)
-                ).toFixed(3),
+                ).toFixed(2),
                 id_user: lastOrders[i].id_user,
               };
               console.log("Fechamento de Ordem com alteração");
@@ -396,9 +396,9 @@ class OrderController {
               banca: lastOrders[i].banca,
               banca_total: newTotalBanca,
               percentual: (
-                parseFloat(lastOrders[i].banca).toFixed(5) /
-                parseFloat(newTotalBanca).toFixed(5)
-              ).toFixed(5),
+                parseFloat(lastOrders[i].banca).toFixed(15) /
+                parseFloat(newTotalBanca).toFixed(15)
+              ).toFixed(15),
               lucro: (
                 parseFloat(request.body.return_profit) *
                 (lastOrders[i].banca / newTotalBanca)

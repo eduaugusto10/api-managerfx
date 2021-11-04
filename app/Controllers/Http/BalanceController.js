@@ -3,9 +3,12 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
+/** @typedef {import Database from "@ioc:Adonis/Lucid/Database"} */
 
 const Balance = use("App/Models/Balance");
 const Order = use("App/Models/Order");
+
+const Database = use("Database");
 /**
  * Resourceful controller for interacting with balances
  */
@@ -184,11 +187,19 @@ class BalanceController {
       .andWhere("operation_type", "2")
       .orderBy("id", "desc")
       .fetch();
-      let balanceCapital = JSON.parse(JSON.stringify(balancesCapital));
-      balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
-
+    let balanceCapital = JSON.parse(JSON.stringify(balancesCapital));
+    balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
+    console.log(balanceCapital[0]);
     return { balanceCapital, balance };
   }
+
+  async profitMonth({ params, request, response, view }) {
+    const balance = await Database.rawQuery(
+      "SELECT * FROM `balances` WHERE id_user=1140 AND Month(date_operation) = 10"
+    );
+    return balance;
+  }
+
   /**
    * Display a single balance.
    * GET balances/:id
