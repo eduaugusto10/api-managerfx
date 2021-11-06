@@ -1,6 +1,7 @@
 "use strict";
 
 const Operation = use("App/Models/Operation");
+const Balance = use("App/Models/Balance");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -25,6 +26,30 @@ class OperationController {
     return operation;
   }
 
+  async openoperations({ params, request, response, view }) {
+    let equity = 0;
+    let discount = 0;
+    const operation = await Operation.query()
+      .where("id_adm", params.id_adm)
+      .orderBy("id", "desc")
+      .fetch();
+
+    for (let i = 0; i < operation.rows.length; i++) {
+      const operations = await Balance.query()
+        .where("id_user", params.id_cliente)
+        .andWhere("ticket", operation.rows[i].ticket)
+        .orderBy("id", "desc")
+        .fetch();
+      equity =
+        equity +
+        parseFloat(operations.rows[0].percentual) *
+          operation.rows[i].return_profit;
+      console.log(
+        "Nova operação: " + operation.rows[i].return_profit + " " + equity
+      );
+    }
+    return equity;
+  }
   /**
    * Render a form to be used for creating a new operation.
    * GET operations/create

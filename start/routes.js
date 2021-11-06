@@ -11,6 +11,9 @@ Route.post("/users", "UserController.create");
 Route.post("/sessions", "SessionController.create");
 
 Route.resource("operationsave", "OperationController").apiOnly();
+Route.get("/operation/id_cliente=:id_cliente?id_adm=:id_adm", "OperationController.openoperations");
+
+
 //Route.resource("deposit", "DepositController").apiOnly();
 Route.get("/deposit/:id_cliente?page=:page", "DepositController.show");
 Route.get("/deposit/", "DepositController.index");
