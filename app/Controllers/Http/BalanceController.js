@@ -3,12 +3,10 @@
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
-/** @typedef {import Database from "@ioc:Adonis/Lucid/Database"} */
 
 const Balance = use("App/Models/Balance");
 const Order = use("App/Models/Order");
 
-const Database = use("Database");
 /**
  * Resourceful controller for interacting with balances
  */
@@ -48,6 +46,7 @@ class BalanceController {
       "ticket",
       "date_operation",
       "banca_total",
+      "comission",
       "banca",
       "id_user",
       "percentual",
@@ -115,6 +114,7 @@ class BalanceController {
           banca: (parseFloat(balanceJSON[idNumber].banca) - ganhoDia).toFixed(
             3
           ),
+          comission: 0,
           banca_total: balanceJSON[idNumber].banca_total,
           percentual: (
             (parseFloat(balanceJSON[idNumber].banca) - parseFloat(ganhoDia)) /
@@ -140,6 +140,7 @@ class BalanceController {
           banca: (
             parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)
           ).toFixed(3),
+          comission: 0,
           banca_total: balanceJSON[i].banca_total,
           percentual: (
             (parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)) /
@@ -191,13 +192,6 @@ class BalanceController {
     balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
     console.log(balanceCapital[0]);
     return { balanceCapital, balance };
-  }
-
-  async profitMonth({ params, request, response, view }) {
-    const balance = await Database.rawQuery(
-      "SELECT * FROM `balances` WHERE id_user=1140 AND Month(date_operation) = 10"
-    );
-    return balance;
   }
 
   /**

@@ -136,6 +136,7 @@ class OrderController {
               (parseFloat(balanceJSON[idNumber].banca) - parseFloat(ganhoDia)) /
               parseFloat(balanceJSON[idNumber].banca_total)
             ).toFixed(15),
+            comission: 0,
             lucro: 0,
             id_user: balanceJSON[idNumber].id_user,
           };
@@ -162,6 +163,7 @@ class OrderController {
               parseFloat(balanceJSON[i].banca_total)
             ).toFixed(15),
             lucro: 0,
+            comission: 0,
             id_user: balanceJSON[i].id_user,
           };
           console.log("Balanço Final do Dia");
@@ -179,6 +181,7 @@ class OrderController {
         tax: 0,
         return_profit: 0,
         id_adm: 0,
+        comission: 0,
         date: new Date(`${lastDayOrder} 23:59:59`),
         calculated: 0,
         id_user: 0,
@@ -257,6 +260,7 @@ class OrderController {
             : 0) +
             parseFloat(request.body.return_profit))
         ).toFixed(15),
+        comission: 0,
         lucro: 0,
         id_user: request.body.id_user,
       };
@@ -292,6 +296,7 @@ class OrderController {
                 : 0) +
                 parseFloat(request.body.return_profit))
             ).toFixed(15),
+            comission: 0,
             lucro: 0,
             id_user: lastOrders[i].id_user,
           };
@@ -333,6 +338,11 @@ class OrderController {
             banca_total: newTotalBanca.toFixed(2),
             percentual: parseFloat(lastOrders[i].percentual).toFixed(15),
             lucro: 0,
+            comission:
+              (parseFloat(request.body.comission) +
+                parseFloat(request.body.swap) +
+                parseFloat(request.body.tax)) *
+              parseFloat(lastOrders[i].percentual).toFixed(15),
             id_user: lastOrders[i].id_user,
           };
           console.log("Nova Ordem");
@@ -370,6 +380,15 @@ class OrderController {
                     parseFloat(lastOrders[i].banca)) /
                   newTotalBanca
                 ).toFixed(15),
+                comission:
+                  (parseFloat(request.body.comission) +
+                    parseFloat(request.body.swap) +
+                    parseFloat(request.body.tax)) *
+                  (
+                    (parseFloat(orderSearch[j].percentual) * newValueOrder +
+                      parseFloat(lastOrders[i].banca)) /
+                    newTotalBanca
+                  ).toFixed(15),
                 lucro: (
                   parseFloat(request.body.return_profit) *
                   (parseFloat(orderSearch[j].percentual) !== 1
@@ -399,6 +418,7 @@ class OrderController {
                 parseFloat(lastOrders[i].banca).toFixed(15) /
                 parseFloat(newTotalBanca).toFixed(15)
               ).toFixed(15),
+              comission: 0,
               lucro: (
                 parseFloat(request.body.return_profit) *
                 (lastOrders[i].banca / newTotalBanca)
