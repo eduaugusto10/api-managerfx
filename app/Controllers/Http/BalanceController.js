@@ -194,6 +194,17 @@ class BalanceController {
     return { balanceCapital, balance };
   }
 
+  async comissionHome({ params, request, response, view }) {
+    const balancesCapital = await Balance.query()
+      .where("id_user", params.id_user)
+      .orderBy("id", "desc")
+      .fetch();
+    let balanceCapital = JSON.parse(JSON.stringify(balancesCapital));
+    balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
+    console.log(balanceCapital[0]);
+    return { balanceCapital };
+  }
+
   /**
    * Display a single balance.
    * GET balances/:id
