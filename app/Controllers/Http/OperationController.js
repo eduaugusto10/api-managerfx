@@ -28,6 +28,7 @@ class OperationController {
 
   async openoperations({ params, request, response, view }) {
     let equity = 0;
+    let allOrders = [];
     const operation = await Operation.query()
       .where("id_adm", params.id_adm)
       .orderBy("id", "desc")
@@ -43,11 +44,10 @@ class OperationController {
         equity +
         parseFloat(operations.rows[0].percentual) *
           operation.rows[i].return_profit;
-      console.log(
-        "Nova operação: " + operation.rows[i].return_profit + " " + equity
-      );
+      allOrders.push(operations.rows[0]);
     }
-    return { equity, operation };
+    console.log(allOrders);
+    return { equity, operation, allOrders };
   }
   /**
    * Render a form to be used for creating a new operation.
