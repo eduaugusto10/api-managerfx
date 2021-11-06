@@ -28,7 +28,6 @@ class OperationController {
 
   async openoperations({ params, request, response, view }) {
     let equity = 0;
-    let discount = 0;
     const operation = await Operation.query()
       .where("id_adm", params.id_adm)
       .orderBy("id", "desc")
@@ -48,7 +47,7 @@ class OperationController {
         "Nova operação: " + operation.rows[i].return_profit + " " + equity
       );
     }
-    return equity;
+    return { equity, operation };
   }
   /**
    * Render a form to be used for creating a new operation.

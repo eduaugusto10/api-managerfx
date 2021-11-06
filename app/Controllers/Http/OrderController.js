@@ -136,7 +136,7 @@ class OrderController {
               (parseFloat(balanceJSON[idNumber].banca) - parseFloat(ganhoDia)) /
               parseFloat(balanceJSON[idNumber].banca_total)
             ).toFixed(15),
-            comission: 0,
+            comission: "-"+ganhoDia,
             lucro: 0,
             id_user: balanceJSON[idNumber].id_user,
           };
