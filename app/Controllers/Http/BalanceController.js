@@ -251,8 +251,6 @@ class BalanceController {
       .andWhere("direction", "0")
       .orderBy("id", "desc")
       .fetch();
-
-      console.log(closeOrder.rows[0]);
       if (closeOrder.rows.length > 0) close.push(closeOrder.rows[0]);
     }
     return { balance, close };
