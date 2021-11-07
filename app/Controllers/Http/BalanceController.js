@@ -259,7 +259,7 @@ class BalanceController {
 
   async monthprofit({ params, request, response, view }) {
     const balance = await Database.raw(
-      "SELECT id_user,YEAR(date_operation),MONTH(date_operation), SUM(lucro) FROM balances WHERE id_user= ? group by id_user,YEAR(date_operation), MONTH(date_operation);",
+      "SELECT id_user,YEAR(date_operation) as year,MONTH(date_operation) as month, SUM(lucro) as sum FROM balances WHERE id_user= ? group by id_user,year, month;",
       [params.id_user]
     );
     const balances = balance[0];
