@@ -234,6 +234,29 @@ class BalanceController {
    */
   async edit({ params, request, response, view }) {}
 
+  async close({ params, request, response, view }) {
+    const limit = 20;
+    const balance = await Balance.query()
+      .where("id_user", params.id_user)
+      .andWhere("ticket", ">", "0")
+      .andWhere("lucro", "!=", "0")
+      .orderBy("id", "desc")
+      .paginate(params.page, limit);
+
+    let close = [];
+    let closeOrder;
+    for (let i = 0; i < balance.rows.length; i++) {
+      closeOrder = await Order.query()
+      .where("order_id", balance.rows[i].ticket)
+      .andWhere("direction", "0")
+      .orderBy("id", "desc")
+      .fetch();
+
+      console.log(closeOrder.rows[0]);
+      if (closeOrder.rows.length > 0) close.push(closeOrder.rows[0]);
+    }
+    return { balance, close };
+  }
   /**
    * Update balance details.
    * PUT or PATCH balances/:id

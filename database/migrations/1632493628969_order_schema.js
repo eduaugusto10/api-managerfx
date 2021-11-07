@@ -18,6 +18,7 @@ class OrderSchema extends Schema {
       table.dateTime("date");
       table.integer("calculated");
       table.integer("id_user");
+      table.integer("direction");
       table.timestamps();
     });
   }

@@ -56,6 +56,7 @@ class OrderController {
       "date",
       "calculated",
       "id_user",
+      "direction",
     ]);
 
     /*Extrai somente a última ordem salva no BD para puxar todos usuários ativos*/
@@ -185,6 +186,7 @@ class OrderController {
         date: new Date(`${lastDayOrder} 23:59:59`),
         calculated: 0,
         id_user: 0,
+        direction : 9,
       };
 
       const order = await Order.create(data);
