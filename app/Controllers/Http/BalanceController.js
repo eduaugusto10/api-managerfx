@@ -6,6 +6,7 @@
 
 const Balance = use("App/Models/Balance");
 const Order = use("App/Models/Order");
+const Database = use("Database");
 
 /**
  * Resourceful controller for interacting with balances
@@ -247,13 +248,22 @@ class BalanceController {
     let closeOrder;
     for (let i = 0; i < balance.rows.length; i++) {
       closeOrder = await Order.query()
-      .where("order_id", balance.rows[i].ticket)
-      .andWhere("direction", "0")
-      .orderBy("id", "desc")
-      .fetch();
+        .where("order_id", balance.rows[i].ticket)
+        .andWhere("direction", "0")
+        .orderBy("id", "desc")
+        .fetch();
       if (closeOrder.rows.length > 0) close.push(closeOrder.rows[0]);
     }
     return { balance, close };
+  }
+
+  async monthprofit({ params, request, response, view }) {
+    const balance = await Database.raw(
+      "SELECT id_user,YEAR(date_operation),MONTH(date_operation), SUM(lucro) FROM balances WHERE id_user=1163 group by id_user,YEAR(date_operation), MONTH(date_operation);"
+    );
+    const balances = balance[0];
+    const length = balance[0].length;
+    return { length, balances };
   }
   /**
    * Update balance details.

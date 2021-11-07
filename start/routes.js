@@ -30,6 +30,7 @@ Route.get("/comissionhome/:id_user", "BalanceController.comissionHome");
 Route.get("/fetching", "BalanceController.fetching");
 Route.get("/profitmonth", "BalanceController.profitMonth");
 Route.get("/close/:id_user", "BalanceController.close");
+Route.get("/month", "BalanceController.monthprofit");
 
 Route.get("/counter/:adm_nr", "CounterController.show");
 Route.get("/counters/:adm_nr", "CounterController.shows");
