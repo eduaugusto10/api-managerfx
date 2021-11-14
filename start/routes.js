@@ -35,3 +35,6 @@ Route.get("/month/:id_user", "BalanceController.monthprofit");
 Route.get("/counter/:adm_nr", "CounterController.show");
 Route.get("/counters/:adm_nr", "CounterController.shows");
 Route.post("/counter", "CounterController.store");
+
+
+Route.put("/opened/:ticket", "OperationController.update");

@@ -115,7 +115,14 @@ class OperationController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response }) {
+    const operation = new Operation
+    .query()
+    .where('ticket', params.ticket)
+    .update({ return_profit: request.body.return_profit })
+
+    return operation;
+  }
 
   /**
    * Delete a operation with id.

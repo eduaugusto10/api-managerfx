@@ -60,13 +60,8 @@ class OrderController {
     ]);
 
     /*Extrai somente a última ordem salva no BD para puxar todos usuários ativos*/
-    console.log("=========== Last Order ================");
     let lastOrder = await this.show();
     lastOrder = JSON.parse(JSON.stringify(lastOrder))[0];
-    console.log(lastOrder);
-    console.log(
-      "=============== Últimas Ordens pela mesma data ================"
-    );
     let dayLastOrder = new Date(lastOrder.date);
     let dayActualOrder = new Date(request.body.date);
 
@@ -103,7 +98,6 @@ class OrderController {
         listaID[i] = balanceJSON[i].id_user;
       }
       let listaIDs = [...new Set(listaID)];
-      console.log(listaIDs.sort());
       let ganhoDiaAdm = 0;
       for (let i = 0; i < listaIDs.length; i++) {
         let idNumber = 0;
@@ -115,17 +109,12 @@ class OrderController {
           ) {
             ganhoDia = ganhoDia + parseFloat(balanceJSON[j].lucro) * 0.25;
             ganhoDiaAdm = ganhoDiaAdm + parseFloat(balanceJSON[j].lucro) * 0.25;
-            console.log("Lucro: ", parseFloat(balanceJSON[j].lucro));
             idNumber = j;
             flagNew = true;
           }
         }
 
         if (balanceJSON[idNumber].id_user != 1140 && flagNew == true) {
-          console.log(
-            "ID: ",
-            balanceJSON[idNumber].id_user + " Ganho:" + ganhoDia
-          );
           const datas = {
             ticket: 0,
             date_operation: `${lastDayOrder} 23:59:59`,
@@ -137,12 +126,10 @@ class OrderController {
               (parseFloat(balanceJSON[idNumber].banca) - parseFloat(ganhoDia)) /
               parseFloat(balanceJSON[idNumber].banca_total)
             ).toFixed(15),
-            comission: "-"+ganhoDia,
+            comission: "-" + ganhoDia,
             lucro: 0,
             id_user: balanceJSON[idNumber].id_user,
           };
-          console.log("Balanço Final do Dia");
-          console.log(datas);
           const balance = await Balance.create(datas);
           ganhoDia = 0;
           flagNew = false;
@@ -151,7 +138,6 @@ class OrderController {
       let datas = [];
       for (let i = 0; i < ordensLength; i++) {
         if (balanceJSON[i].id_user == 1140) {
-          console.log("ID: ", balanceJSON[i].id_user);
           datas = {
             ticket: 0,
             date_operation: `${lastDayOrder} 23:59:59`,
@@ -163,12 +149,10 @@ class OrderController {
               (parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)) /
               parseFloat(balanceJSON[i].banca_total)
             ).toFixed(15),
-            lucro: 0,
+            lucro: parseFloat(ganhoDiaAdm).toFixed(2),
             comission: 0,
             id_user: balanceJSON[i].id_user,
           };
-          console.log("Balanço Final do Dia");
-          console.log(datas);
           ganhoDia = 0;
         }
       }
@@ -186,7 +170,7 @@ class OrderController {
         date: new Date(`${lastDayOrder} 23:59:59`),
         calculated: 0,
         id_user: 0,
-        direction : 9,
+        direction: 9,
       };
 
       const order = await Order.create(data);
@@ -205,7 +189,6 @@ class OrderController {
     limits = JSON.parse(JSON.stringify(limits))[0];
     const newLimit = limits === undefined ? 0 : limits.qty_users;
     limits = limits === undefined ? 1 : newLimit;
-    console.log("Quantidade de usuario por esse adm: ", limits);
 
     let lastOrders = undefined;
     if (lastOrder !== undefined) {
@@ -216,12 +199,8 @@ class OrderController {
         .fetch();
 
       lastOrders = JSON.parse(JSON.stringify(lastOrders));
-      console.log("Ordens do Mesmo dia");
-      console.log(lastOrders);
-      console.log("Tamanho array ", lastOrders.length);
     }
     const lastOrdersLength = lastOrders.length;
-    console.log("========================");
     /*Criar a nova ordem no banco de dados ORDER*/
     const order = await Order.create(data);
 
@@ -238,12 +217,8 @@ class OrderController {
         .orderBy("id", "desc") //ordena pela id e decrescente
         .limit(limit) // somente 1 ordem
         .fetch();
-      console.log("Cadastrado novo usuario");
       new_users = JSON.parse(JSON.stringify(new_user))[0];
       const new_usersWhitou = JSON.parse(JSON.stringify(new_user));
-      console.log("Dados do novo usuario ", new_users);
-      console.log("Array do novo usuario ", new_usersWhitou.length);
-      console.log("========================");
       const datas = {
         ticket: request.body.order_id,
         date_operation: new Date(request.body.date),
@@ -266,7 +241,6 @@ class OrderController {
         lucro: 0,
         id_user: request.body.id_user,
       };
-      console.log("Entrada 1");
       const balance = await Balance.create(datas);
       const dataCounter = {
         adm_nr: request.body.id_adm,
@@ -278,7 +252,6 @@ class OrderController {
 
       /*Bloco abaixo é só para colocar todos os usuários na mesma data*/
       for (let i = 0; i < lastOrdersLength; i++) {
-        console.log("ID: ", lastOrders[i].id_user);
         if (request.body.id_user !== lastOrders[i].id_user) {
           const datas = {
             ticket: request.body.order_id,
@@ -302,7 +275,6 @@ class OrderController {
             lucro: 0,
             id_user: lastOrders[i].id_user,
           };
-          console.log("Entrada 2");
           const balance = await Balance.create(datas);
         }
       }
@@ -318,21 +290,13 @@ class OrderController {
 
       orderSearch = JSON.parse(JSON.stringify(orderSearch));
       const orderSearchLength = orderSearch.length;
-      console.log("====== Usuarios encontrados para aquela ordem ============");
-      console.log(orderSearch);
-      console.log("Tamanho do array: ", orderSearch.length);
-      console.log("=======================");
 
       /**Abertura de ordem */
       if (orderSearchLength < 1) {
         for (let i = 0; i < lastOrdersLength; i++) {
           const newTotalBanca =
             parseFloat(lastOrders[i].banca_total) +
-            parseFloat(request.body.comission) +
-            parseFloat(request.body.swap) +
-            parseFloat(request.body.tax) +
             parseFloat(request.body.return_profit);
-          console.log("ID: ", lastOrders[i].id_user);
           const datas = {
             ticket: request.body.order_id,
             date_operation: new Date(request.body.date),
@@ -347,7 +311,6 @@ class OrderController {
               parseFloat(lastOrders[i].percentual).toFixed(15),
             id_user: lastOrders[i].id_user,
           };
-          console.log("Nova Ordem");
           const balance = await Balance.create(datas);
         }
       } else {
@@ -356,29 +319,21 @@ class OrderController {
           let flagFound = true;
           const newTotalBanca =
             parseFloat(lastOrders[i].banca_total) +
-            parseFloat(request.body.comission) +
-            parseFloat(request.body.swap) +
-            parseFloat(request.body.tax) +
             parseFloat(request.body.return_profit);
           for (let j = 0; j < orderSearchLength; j++) {
             if (lastOrders[i].id_user === orderSearch[j].id_user) {
-              const newValueOrder =
-                parseFloat(request.body.comission) +
-                parseFloat(request.body.swap) +
-                parseFloat(request.body.tax) +
-                parseFloat(request.body.return_profit);
-
-              console.log("ID: ", lastOrders[i].id_user);
               const datas = {
                 ticket: request.body.order_id,
                 date_operation: new Date(request.body.date),
                 banca: (
-                  parseFloat(orderSearch[j].percentual) * newValueOrder +
+                  parseFloat(orderSearch[j].percentual) *
+                    parseFloat(request.body.return_profit) +
                   parseFloat(lastOrders[i].banca)
                 ).toFixed(2),
                 banca_total: newTotalBanca.toFixed(2),
                 percentual: (
-                  (parseFloat(orderSearch[j].percentual) * newValueOrder +
+                  (parseFloat(orderSearch[j].percentual) *
+                    parseFloat(request.body.return_profit) +
                     parseFloat(lastOrders[i].banca)) /
                   newTotalBanca
                 ).toFixed(15),
@@ -387,30 +342,22 @@ class OrderController {
                     parseFloat(request.body.swap) +
                     parseFloat(request.body.tax)) *
                   (
-                    (parseFloat(orderSearch[j].percentual) * newValueOrder +
+                    (parseFloat(orderSearch[j].percentual) *
+                      parseFloat(request.body.return_profit) +
                       parseFloat(lastOrders[i].banca)) /
                     newTotalBanca
                   ).toFixed(15),
                 lucro: (
-                  parseFloat(request.body.return_profit) *
-                  (parseFloat(orderSearch[j].percentual) !== 1
-                    ? (
-                        (parseFloat(orderSearch[j].percentual) * newValueOrder +
-                          parseFloat(lastOrders[i].banca)) /
-                        newTotalBanca
-                      ).toFixed(6)
-                    : 1)
+                  parseFloat(orderSearch[j].percentual) *
+                  parseFloat(request.body.return_profit)
                 ).toFixed(2),
                 id_user: lastOrders[i].id_user,
               };
-              console.log("Fechamento de Ordem com alteração");
-              console.log(datas);
               flagFound = false;
               const balance = await Balance.create(datas);
             }
           }
           if (flagFound === true) {
-            console.log("ID: ", lastOrders[i].id_user);
             const datas = {
               ticket: 0,
               date_operation: new Date(request.body.date),
@@ -421,13 +368,9 @@ class OrderController {
                 parseFloat(newTotalBanca).toFixed(15)
               ).toFixed(15),
               comission: 0,
-              lucro: (
-                parseFloat(request.body.return_profit) *
-                (lastOrders[i].banca / newTotalBanca)
-              ).toFixed(2),
+              lucro: 0,
               id_user: lastOrders[i].id_user,
             };
-            console.log("Fechamento de Ordem sem alteração");
             flagFound = false;
             const balance = await Balance.create(datas);
           }
