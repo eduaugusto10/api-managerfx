@@ -116,7 +116,7 @@ class OperationController {
    * @param {Response} ctx.response
    */
   async update({ params, request, response }) {
-    const operation = new Operation
+    const operation = await Operation
     .query()
     .where('ticket', params.ticket)
     .update({ return_profit: request.body.return_profit })
