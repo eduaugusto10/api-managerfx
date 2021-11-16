@@ -65,6 +65,7 @@ class CounterController {
   async show(params) {
     const limit = 1;
     const counter = await Counter.query()
+
       .where("adm_nr", params)
       .limit(limit) // somente 1 ordem
       .orderBy("id", "desc") //ordena pela id e decrescente
