@@ -176,23 +176,21 @@ class BalanceController {
   }
 
   async balanceHome({ params, request, response, view }) {
-      const balances = await Database.raw(
-        "SELECT id_user, SUM(lucro) as sum FROM balances WHERE id_user=? group by id_user;",
-        [params.id_user]
-      );
-
-
+    const limit = 1;
+    const balances = await Balance.query()
+      .where("id_user", params.id_user)
+      .orderBy("id", "desc")
+      .limit(limit)
+      .fetch();
     let balance = JSON.parse(JSON.stringify(balances))[0];
     balance = JSON.parse(JSON.stringify(balance));
-    const balancesCapital = await Order.query()
-      .where("id_user", params.id_user)
-      .andWhere("operation_type", "2")
-      .orderBy("id", "desc")
-      .fetch();
-    let balanceCapital = JSON.parse(JSON.stringify(balancesCapital));
-    balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
-    console.log(balanceCapital[0]);
-    return { balanceCapital, balance };
+
+    const balancesCapital = await Order.raw(
+      "SELECT id_user, SUM(return_profit) as sum FROM orders WHERE id_user=? AND operation_type=2 group by id_user;",
+      [params.id_user]
+    );
+
+    return { balancesCapital, balance };
   }
 
   async comissionHome({ params, request, response, view }) {
