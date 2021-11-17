@@ -185,7 +185,7 @@ class BalanceController {
     let balance = JSON.parse(JSON.stringify(balances))[0];
     balance = JSON.parse(JSON.stringify(balance));
 
-    const balancesCapital = await Order.raw(
+    const balancesCapital = await Database.raw(
       "SELECT id_user, SUM(return_profit) as sum FROM orders WHERE id_user=? AND operation_type=2 group by id_user;",
       [params.id_user]
     );
