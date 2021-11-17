@@ -192,7 +192,14 @@ class BalanceController {
     let balanceCapital = JSON.parse(JSON.stringify(balancesCapital))[0];
     balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
 
-    return { balanceCapital, balance };
+    const comission = await Database.raw(
+      "SELECT id_user, SUM(comission) as sum FROM balances WHERE id_user=? group by id_user;",
+      [params.id_user]
+    );
+    let comissions = JSON.parse(JSON.stringify(comission))[0];
+    comissions = JSON.parse(JSON.stringify(comissions));
+
+    return { balanceCapital, balance, comissions };
   }
 
   async comissionHome({ params, request, response, view }) {
