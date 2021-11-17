@@ -40,11 +40,13 @@ class OperationController {
         .andWhere("ticket", operation.rows[i].ticket)
         .orderBy("id", "desc")
         .fetch();
-      equity =
-        equity +
-        parseFloat(operations.rows[0].percentual) *
-          operation.rows[i].return_profit;
-      allOrders.push(operations.rows[0]);
+      if (operations.rows[0].percentual != undefined) {
+        equity =
+          equity +
+          parseFloat(operations.rows[0].percentual) *
+            operation.rows[i].return_profit;
+        allOrders.push(operations.rows[0]);
+      }
     }
     console.log(allOrders);
     return { equity, operation, allOrders };
@@ -116,10 +118,9 @@ class OperationController {
    * @param {Response} ctx.response
    */
   async update({ params, request, response }) {
-    const operation = await Operation
-    .query()
-    .where('ticket', params.ticket)
-    .update({ return_profit: request.body.return_profit })
+    const operation = await Operation.query()
+      .where("ticket", params.ticket)
+      .update({ return_profit: request.body.return_profit });
 
     return operation;
   }
