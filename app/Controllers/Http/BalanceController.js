@@ -189,8 +189,10 @@ class BalanceController {
       "SELECT id_user, SUM(return_profit) as sum FROM orders WHERE id_user=? AND operation_type=2 group by id_user;",
       [params.id_user]
     );
+    let balanceCapital = JSON.parse(JSON.stringify(balancesCapital))[0];
+    balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
 
-    return { balancesCapital, balance };
+    return { balanceCapital, balance };
   }
 
   async comissionHome({ params, request, response, view }) {
