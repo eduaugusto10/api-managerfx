@@ -40,7 +40,8 @@ class OperationController {
         .andWhere("ticket", operation.rows[i].ticket)
         .orderBy("id", "desc")
         .fetch();
-      if (operations.rows[0].percentual != undefined) {
+        console.log(operations.rows[0])
+      if (operations.rows[0] != undefined) {
         equity =
           equity +
           parseFloat(operations.rows[0].percentual) *
