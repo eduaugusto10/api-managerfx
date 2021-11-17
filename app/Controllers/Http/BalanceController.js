@@ -176,12 +176,12 @@ class BalanceController {
   }
 
   async balanceHome({ params, request, response, view }) {
-    const limit = 1;
-    const balances = await Balance.query()
-      .where("id_user", params.id_user)
-      .orderBy("id", "desc")
-      .limit(limit)
-      .fetch();
+      const balances = await Database.raw(
+        "SELECT id_user, SUM(lucro) as sum FROM balances WHERE id_user=? group by id_user;",
+        [params.id_user]
+      );
+
+
     let balance = JSON.parse(JSON.stringify(balances))[0];
     balance = JSON.parse(JSON.stringify(balance));
     const balancesCapital = await Order.query()
