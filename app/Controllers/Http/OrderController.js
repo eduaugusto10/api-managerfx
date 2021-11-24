@@ -431,14 +431,14 @@ class OrderController {
     let allOrders = [];
     const operation = await Order.query()
       .where("id_adm", params.id_adm)
-      andWhere("calculated",1)
+      .andWhere("calculated",1)
       .orderBy("id", "desc")
       .fetch();
-
+console.log(operation.rows)
     for (let i = 0; i < operation.rows.length; i++) {
       const operations = await Balance.query()
         .where("id_user", params.id_cliente)
-        .andWhere("ticket", operation.rows[i].ticket)
+        .andWhere("ticket", operation.rows[i].order_id)
         .orderBy("id", "desc")
         .fetch();
         console.log(operations.rows[0])
