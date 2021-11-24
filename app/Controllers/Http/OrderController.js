@@ -418,7 +418,13 @@ class OrderController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({ params, request, response }) {}
+  async update({ params, request, response }) {
+    const order = await Order.query()
+      .where("order_id", params.ticket)
+      .update({ return_profit: request.body.return_profit, calculated: 1 });
+
+    return order;
+  }
 
   /**
    * Delete a order with id.

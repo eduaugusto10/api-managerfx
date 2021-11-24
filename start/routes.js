@@ -36,6 +36,6 @@ Route.get("/counter/:adm_nr", "CounterController.show");
 Route.get("/counters/:adm_nr", "CounterController.shows");
 Route.post("/counter", "CounterController.store");
 
-Route.put("/opened/:ticket", "OperationController.update");
+Route.put("/opened/:ticket", "OrderController.update");
 
 Route.resource("date", "LastDateController").apiOnly();
