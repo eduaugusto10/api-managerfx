@@ -254,14 +254,12 @@ class BalanceController {
     let close = [];
     let closeOrder;
     for (let i = 0; i < balance.rows.length; i++) {
-      if (balance.rows[i].direction === 1) {
-        closeOrder = await Order.query()
-          .where("order_id", balance.rows[i].ticket)
-          .andWhere("direction", "0")
-          .orderBy("id", "desc")
-          .fetch();
-        if (closeOrder.rows.length > 0) close.push(closeOrder.rows[0]);
-      }
+      closeOrder = await Order.query()
+        .where("order_id", balance.rows[i].ticket)
+        .andWhere("direction", "0")
+        .orderBy("id", "desc")
+        .fetch();
+      if (closeOrder.rows.length > 0) close.push(closeOrder.rows[0]);
     }
     return { balance, close };
   }
