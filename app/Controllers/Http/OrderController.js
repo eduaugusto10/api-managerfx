@@ -426,6 +426,34 @@ class OrderController {
     return order;
   }
 
+  async openoperations({ params, request, response, view }) {
+    let equity = 0;
+    let allOrders = [];
+    const operation = await Order.query()
+      .where("id_adm", params.id_adm)
+      andWhere("calculated",1)
+      .orderBy("id", "desc")
+      .fetch();
+
+    for (let i = 0; i < operation.rows.length; i++) {
+      const operations = await Balance.query()
+        .where("id_user", params.id_cliente)
+        .andWhere("ticket", operation.rows[i].ticket)
+        .orderBy("id", "desc")
+        .fetch();
+        console.log(operations.rows[0])
+      if (operations.rows[0] != undefined) {
+        equity =
+          equity +
+          parseFloat(operations.rows[0].percentual) *
+            operation.rows[i].return_profit;
+        allOrders.push(operations.rows[0]);
+      }
+    }
+    console.log(allOrders);
+    return { equity, operation, allOrders };
+  }
+
   /**
    * Delete a order with id.
    * DELETE orders/:id

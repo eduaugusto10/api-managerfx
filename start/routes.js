@@ -13,7 +13,7 @@ Route.post("/sessions", "SessionController.create");
 Route.resource("operationsave", "OperationController").apiOnly();
 Route.get(
   "/operation/id_cliente=:id_cliente?id_adm=:id_adm",
-  "OperationController.openoperations"
+  "OrderController.openoperations"
 );
 
 //Route.resource("deposit", "DepositController").apiOnly();
