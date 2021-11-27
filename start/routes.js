@@ -8,6 +8,8 @@ Route.get("/", () => {
 });
 
 Route.post("/users", "UserController.create");
+Route.get("/users", "UserController.show");
+
 Route.post("/sessions", "SessionController.create");
 
 Route.resource("operationsave", "OperationController").apiOnly();

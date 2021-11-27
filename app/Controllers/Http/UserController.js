@@ -19,6 +19,14 @@ class UserController {
 
     return user;
   }
+
+  async show() {
+    const user = await User.query()
+      .where("id_adm","1140")
+      .orderBy("id", "desc")
+      .fetch();
+    return user;
+  }
 }
 
 module.exports = UserController;
