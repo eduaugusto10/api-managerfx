@@ -40,7 +40,7 @@ class UserController {
     user.first_name = request.body.first_name;
     user.id_metatrader = request.body.id_metatrader;
     user.email = request.body.email;
-    user.inativated = request.body.inativated;
+    user.ativated = request.body.ativated;
 
     await user.save();
 
