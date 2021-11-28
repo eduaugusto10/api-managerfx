@@ -10,6 +10,7 @@ Route.get("/", () => {
 Route.post("/users", "UserController.create");
 Route.get("/users", "UserController.show");
 Route.get("/users/:id", "UserController.queries");
+Route.put("/users/:id", "UserController.update");
 
 Route.post("/sessions", "SessionController.create");
 

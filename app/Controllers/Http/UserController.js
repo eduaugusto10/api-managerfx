@@ -33,6 +33,19 @@ class UserController {
 
     return user;
   }
+
+  async update({ params, request, response, session }) {
+    const user = await User.findOrFail(params.id);
+
+    user.first_name = request.body.first_name;
+    user.id_metatrader = request.body.id_metatrader;
+    user.email = request.body.email;
+    user.inativated = request.body.inativated;
+
+    await user.save();
+
+    return "Usuário atualizado com sucesso!";
+  }
 }
 
 module.exports = UserController;
