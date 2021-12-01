@@ -41,6 +41,11 @@ class UserController {
     user.id_metatrader = request.body.id_metatrader;
     user.email = request.body.email;
     user.ativated = request.body.ativated;
+    user.password = request.body.password;
+    user.accountname = request.body.accountname;
+    user.phone = request.body.phone;
+    user.validate_assign = request.body.validate_assign;
+    user.assign_plan = request.body.assign_plan;
 
     await user.save();
 
