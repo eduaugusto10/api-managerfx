@@ -19,6 +19,7 @@ class UserController {
       "phone",
       "validate_assign",
       "assign_plan",
+      "admin",
     ]);
 
     const user = await User.create(data);
