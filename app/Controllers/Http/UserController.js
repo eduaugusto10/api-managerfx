@@ -13,6 +13,12 @@ class UserController {
       "id_adm",
       "email",
       "password",
+      "ativated",
+      "password",
+      "accountname",
+      "phone",
+      "validate_assign",
+      "assign_plan",
     ]);
 
     const user = await User.create(data);
