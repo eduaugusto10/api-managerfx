@@ -27,9 +27,17 @@ class UserController {
     return user;
   }
 
-  async show() {
+  async show({params}) {
     const user = await User.query()
-      .where("id_adm", "1140")
+      .where("id_adm", params.id)
+      .orderBy("id", "desc")
+      .fetch();
+    return user;
+  }
+
+  async shows() {
+    const user = await User.query()
+      .where("admin", 1)
       .orderBy("id", "desc")
       .fetch();
     return user;
