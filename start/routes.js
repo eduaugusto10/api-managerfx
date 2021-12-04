@@ -22,7 +22,6 @@ Route.get(
   "OrderController.openoperations"
 );
 
-//Route.resource("deposit", "DepositController").apiOnly();
 Route.get("/deposit/:id_cliente?page=:page", "DepositController.show");
 Route.get("/deposit/", "DepositController.index");
 Route.post("/deposit", "DepositController.store");
@@ -33,7 +32,7 @@ Route.post("/order", "OrderController.store");
 Route.get("/balance/:id_user?page=:page", "BalanceController.show");
 Route.get("/balancehome/:id_user", "BalanceController.balanceHome");
 Route.get("/comissionhome/:id_user", "BalanceController.comissionHome");
-Route.get("/fetching", "BalanceController.fetching");
+
 Route.get("/profitmonth", "BalanceController.profitMonth");
 Route.get("/close/:id_user", "BalanceController.close");
 Route.get("/month/:id_user", "BalanceController.monthprofit");
