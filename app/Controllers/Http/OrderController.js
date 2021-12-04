@@ -316,6 +316,11 @@ class OrderController {
       } else {
         /** Encerramento de ordem */
         for (let i = 0; i < lastOrdersLength; i++) {
+          const oldOrder = await Order.findOrFail(request.body.order_id)
+          oldOrder.calculated = 0 // Luxon dateTime is used
+          oldOrder.return_profit = 0 // Luxon dateTime is used
+          await oldOrder.save()
+
           let flagFound = true;
           const newTotalBanca =
             parseFloat(lastOrders[i].banca_total) +

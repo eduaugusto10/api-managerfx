@@ -58,7 +58,6 @@ class BalanceController {
   }
 
   async fetching(todays) {
-    console.log("Chegou ate aqui!");
     let today = new Date(todays);
     const month = ("0" + (today.getMonth() + 1)).slice(-2);
     const day = ("0" + dayLastOrder.getDate()).slice(-2);
