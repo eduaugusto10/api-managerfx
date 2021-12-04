@@ -105,7 +105,7 @@ class OrderController {
         for (let j = 0; j < ordensLength; j++) {
           if (
             listaIDs[i] === balanceJSON[j].id_user &&
-            balanceJSON[j].id_user != 1140
+            balanceJSON[j].id_user != request.body.id_adm
           ) {
             ganhoDia = ganhoDia + parseFloat(balanceJSON[j].lucro) * 0.25;
             ganhoDiaAdm = ganhoDiaAdm + parseFloat(balanceJSON[j].lucro) * 0.25;
@@ -114,7 +114,7 @@ class OrderController {
           }
         }
 
-        if (balanceJSON[idNumber].id_user != 1140 && flagNew == true) {
+        if (balanceJSON[idNumber].id_user != request.body.id_adm && flagNew == true) {
           const datas = {
             ticket: 0,
             date_operation: `${lastDayOrder} 23:59:59`,
@@ -137,7 +137,7 @@ class OrderController {
       }
       let datas = [];
       for (let i = 0; i < ordensLength; i++) {
-        if (balanceJSON[i].id_user == 1140) {
+        if (balanceJSON[i].id_user == request.body.id_adm) {
           datas = {
             ticket: 0,
             date_operation: `${lastDayOrder} 23:59:59`,
@@ -212,7 +212,7 @@ class OrderController {
     if (request.body.operation_type == 2) {
       //não é ordem de entrada na operação
       const limit = 1;
-      const new_user = await Balance.query() //pesquisa o usuário pelo id ex.1140
+      const new_user = await Balance.query() //pesquisa o usuário pelo id ex.
         .where("id_user", request.body.id_user) //pesquisa o id
         .orderBy("id", "desc") //ordena pela id e decrescente
         .limit(limit) // somente 1 ordem
