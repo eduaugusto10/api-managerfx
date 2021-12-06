@@ -107,14 +107,23 @@ class OrderController {
             listaIDs[i] === balanceJSON[j].id_user &&
             balanceJSON[j].id_user != request.body.id_adm
           ) {
-            ganhoDia = ganhoDia + parseFloat(balanceJSON[j].lucro) * parseFloat(balanceJSON[j].performance);
-            ganhoDiaAdm = ganhoDiaAdm + parseFloat(balanceJSON[j].lucro) * parseFloat(balanceJSON[j].performance);
+            ganhoDia =
+              ganhoDia +
+              parseFloat(balanceJSON[j].lucro) *
+                parseFloat(balanceJSON[j].performance);
+            ganhoDiaAdm =
+              ganhoDiaAdm +
+              parseFloat(balanceJSON[j].lucro) *
+                parseFloat(balanceJSON[j].performance);
             idNumber = j;
             flagNew = true;
           }
         }
 
-        if (balanceJSON[idNumber].id_user != request.body.id_adm && flagNew == true) {
+        if (
+          balanceJSON[idNumber].id_user != request.body.id_adm &&
+          flagNew == true
+        ) {
           const datas = {
             ticket: 0,
             date_operation: `${lastDayOrder} 23:59:59`,
@@ -129,6 +138,7 @@ class OrderController {
             comission: "-" + ganhoDia,
             lucro: 0,
             id_user: balanceJSON[idNumber].id_user,
+            performance: balanceJSON[idNumber].performance,
           };
           const balance = await Balance.create(datas);
           ganhoDia = 0;
@@ -152,6 +162,7 @@ class OrderController {
             lucro: parseFloat(ganhoDiaAdm).toFixed(2),
             comission: 0,
             id_user: balanceJSON[i].id_user,
+            performance: balanceJSON[i].performance,
           };
           ganhoDia = 0;
         }
@@ -316,10 +327,10 @@ class OrderController {
       } else {
         /** Encerramento de ordem */
         for (let i = 0; i < lastOrdersLength; i++) {
-          const oldOrder = await Order.findOrFail(request.body.order_id)
-          oldOrder.calculated = 0 // Luxon dateTime is used
-          oldOrder.return_profit = 0 // Luxon dateTime is used
-          await oldOrder.save()
+          const oldOrder = await Order.findOrFail(request.body.order_id);
+          oldOrder.calculated = 0; // Luxon dateTime is used
+          oldOrder.return_profit = 0; // Luxon dateTime is used
+          await oldOrder.save();
 
           let flagFound = true;
           const newTotalBanca =
@@ -436,17 +447,17 @@ class OrderController {
     let allOrders = [];
     const operation = await Order.query()
       .where("id_adm", params.id_adm)
-      .andWhere("calculated",1)
+      .andWhere("calculated", 1)
       .orderBy("id", "desc")
       .fetch();
-console.log(operation.rows)
+    console.log(operation.rows);
     for (let i = 0; i < operation.rows.length; i++) {
       const operations = await Balance.query()
         .where("id_user", params.id_cliente)
         .andWhere("ticket", operation.rows[i].order_id)
         .orderBy("id", "desc")
         .fetch();
-        console.log(operations.rows[0])
+      console.log(operations.rows[0]);
       if (operations.rows[0] != undefined) {
         equity =
           equity +
