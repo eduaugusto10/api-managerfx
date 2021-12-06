@@ -57,7 +57,6 @@ class OrderController {
       "calculated",
       "id_user",
       "direction",
-      "performance"
     ]);
 
     /*Extrai somente a última ordem salva no BD para puxar todos usuários ativos*/
@@ -108,8 +107,8 @@ class OrderController {
             listaIDs[i] === balanceJSON[j].id_user &&
             balanceJSON[j].id_user != request.body.id_adm
           ) {
-            ganhoDia = ganhoDia + parseFloat(balanceJSON[j].lucro) * parseFloat(lastOrder.performance);
-            ganhoDiaAdm = ganhoDiaAdm + parseFloat(balanceJSON[j].lucro) * parseFloat(lastOrder.performance);
+            ganhoDia = ganhoDia + parseFloat(balanceJSON[j].lucro) * parseFloat(balanceJSON[j].performance);
+            ganhoDiaAdm = ganhoDiaAdm + parseFloat(balanceJSON[j].lucro) * parseFloat(balanceJSON[j].performance);
             idNumber = j;
             flagNew = true;
           }
