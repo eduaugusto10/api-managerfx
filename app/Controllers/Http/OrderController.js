@@ -65,6 +65,7 @@ class OrderController {
     let dayLastOrder = new Date(lastOrder.date);
     let dayActualOrder = new Date(request.body.date);
 
+    /*Ajustes nas datas */
     const monthDayLastOrder = ("0" + (dayLastOrder.getMonth() + 1)).slice(-2);
     const dayDayLastOrder = ("0" + dayLastOrder.getDate()).slice(-2);
     const yearDayLastOrder = dayLastOrder.getFullYear();
@@ -145,10 +146,9 @@ class OrderController {
           flagNew = false;
         }
       }
-      let datas = [];
       for (let i = 0; i < ordensLength; i++) {
         if (balanceJSON[i].id_user == request.body.id_adm) {
-          datas = {
+          const datas = {
             ticket: 0,
             date_operation: `${lastDayOrder} 23:59:59`,
             banca: (
@@ -165,9 +165,9 @@ class OrderController {
             performance: balanceJSON[i].performance,
           };
           ganhoDia = 0;
+          await Balance.create(datas);
         }
       }
-      await Balance.create(datas);
       const data = {
         order_id: 0,
         symbol: 0,
