@@ -1,8 +1,11 @@
 "use strict";
 
+const { last } = require("@adonisjs/lucid/src/Lucid/Model");
+
 const Order = use("App/Models/Order");
 const Balance = use("App/Models/Balance");
 const Counter = use("App/Models/Counter");
+const Database = use("Database");
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -146,27 +149,32 @@ class OrderController {
           flagNew = false;
         }
       }
+      let numbers = 0;
       for (let i = 0; i < ordensLength; i++) {
         if (balanceJSON[i].id_user == request.body.id_adm) {
-          const datas = {
-            ticket: 0,
-            date_operation: `${lastDayOrder} 23:59:59`,
-            banca: (
-              parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)
-            ).toFixed(2),
-            banca_total: balanceJSON[i].banca_total,
-            percentual: (
-              (parseFloat(balanceJSON[i].banca) + parseFloat(ganhoDiaAdm)) /
-              parseFloat(balanceJSON[i].banca_total)
-            ).toFixed(15),
-            lucro: parseFloat(ganhoDiaAdm).toFixed(2),
-            comission: 0,
-            id_user: balanceJSON[i].id_user,
-            performance: balanceJSON[i].performance,
-          };
-          ganhoDia = 0;
-          await Balance.create(datas);
+          i > numbers ? (numbers = i) : (numbers = numbers);
         }
+      }
+      for (let i = 0; i < ordensLength; i++) {
+        const datas = {
+          ticket: 0,
+          date_operation: `${lastDayOrder} 23:59:59`,
+          banca: (
+            parseFloat(balanceJSON[numbers].banca) + parseFloat(ganhoDiaAdm)
+          ).toFixed(2),
+          banca_total: balanceJSON[numbers].banca_total,
+          percentual: (
+            (parseFloat(balanceJSON[numbers].banca) + parseFloat(ganhoDiaAdm)) /
+            parseFloat(balanceJSON[numbers].banca_total)
+          ).toFixed(15),
+          lucro: parseFloat(ganhoDiaAdm).toFixed(2),
+          comission: 0,
+          id_user: balanceJSON[numbers].id_user,
+          performance: balanceJSON[numbers].performance,
+        };
+        ganhoDia = 0;
+        await Balance.create(datas);
+        i = ordensLength;
       }
       const data = {
         order_id: 0,
@@ -251,6 +259,7 @@ class OrderController {
         comission: 0,
         lucro: 0,
         id_user: request.body.id_user,
+        performance: new_users.performance,
       };
       const balance = await Balance.create(datas);
       const dataCounter = {
@@ -285,6 +294,7 @@ class OrderController {
             comission: 0,
             lucro: 0,
             id_user: lastOrders[i].id_user,
+            performance: lastOrders[i].performance,
           };
           const balance = await Balance.create(datas);
         }
@@ -321,16 +331,16 @@ class OrderController {
                 parseFloat(request.body.tax)) *
               parseFloat(lastOrders[i].percentual).toFixed(15),
             id_user: lastOrders[i].id_user,
+            performance: lastOrders[i].performance,
           };
           const balance = await Balance.create(datas);
         }
       } else {
         /** Encerramento de ordem */
         for (let i = 0; i < lastOrdersLength; i++) {
-          const oldOrder = await Order.findOrFail(request.body.order_id);
-          oldOrder.calculated = 0; // Luxon dateTime is used
-          oldOrder.return_profit = 0; // Luxon dateTime is used
-          await oldOrder.save();
+          await Order.query()
+            .where("order_id", request.body.order_id)
+            .update({ return_profit: 0, calculated: 0 });
 
           let flagFound = true;
           const newTotalBanca =
@@ -368,6 +378,7 @@ class OrderController {
                   parseFloat(request.body.return_profit)
                 ).toFixed(2),
                 id_user: lastOrders[i].id_user,
+                performance: lastOrders[i].performance,
               };
               flagFound = false;
               const balance = await Balance.create(datas);
@@ -386,6 +397,7 @@ class OrderController {
               comission: 0,
               lucro: 0,
               id_user: lastOrders[i].id_user,
+              performance: lastOrders[i].performance,
             };
             flagFound = false;
             const balance = await Balance.create(datas);
@@ -468,6 +480,16 @@ class OrderController {
     }
     console.log(allOrders);
     return { equity, operation, allOrders };
+  }
+
+  async simplequery({ params, request, response }) {
+    const test = await Database.raw(
+      "SELECT id_user, SUM(lucro) as lucro, SUM(comission) as comission FROM balances WHERE (date_operation BETWEEN '2021-12-03 00:00:00' AND '2021-12-03 23:59:59') group by id_user;"
+    );
+    const test1 = await Database.raw(
+      "SELECT id_user, banca_total, banca, performance FROM balances WHERE (date_operation BETWEEN '2021-12-03 00:00:00' AND '2021-12-03 23:59:59') ORDER BY banca_total DESC LIMIT 15;"
+    );
+    return { test, test1 };
   }
 
   /**

@@ -42,5 +42,6 @@ Route.get("/counters/:adm_nr", "CounterController.shows");
 Route.post("/counter", "CounterController.store");
 
 Route.put("/opened/:ticket", "OrderController.update");
+Route.get("/test", "OrderController.simplequery");
 
 Route.resource("date", "LastDateController").apiOnly();
