@@ -63,16 +63,10 @@ class OrderController {
     ]);
 
     /*Extrai somente a última ordem salva no BD para puxar todos usuários ativos*/
-    let lastOrder = await this.show();
-    lastOrder = JSON.parse(JSON.stringify(lastOrder))[0];
-    let dayLastOrder = new Date(lastOrder.date);
-    let dayActualOrder = new Date(request.body.date);
+    const lastOrder = await this.show();
+    const dayActualOrder = new Date(request.body.date);
 
     /*Ajustes nas datas */
-    const monthDayLastOrder = ("0" + (dayLastOrder.getMonth() + 1)).slice(-2);
-    const dayDayLastOrder = ("0" + dayLastOrder.getDate()).slice(-2);
-    const yearDayLastOrder = dayLastOrder.getFullYear();
-
     const monthdayActualOrder = ("0" + (dayActualOrder.getMonth() + 1)).slice(
       -2
     );
@@ -81,14 +75,12 @@ class OrderController {
 
     const actualDayOrder =
       yeardayActualOrder + "-" + monthdayActualOrder + "-" + daydayActualOrder;
-    const lastDayOrder =
-      yearDayLastOrder + "-" + monthDayLastOrder + "-" + dayDayLastOrder;
 
-    if (actualDayOrder != lastDayOrder) {
+    if (actualDayOrder != lastOrder.justDate) {
       const balance = await Balance.query()
         .whereBetween("date_operation", [
-          `${lastDayOrder} 00:00:00`,
-          `${lastDayOrder} 23:59:59`,
+          `${lastOrder.justDate} 00:00:00`,
+          `${lastOrder.justDate} 23:59:59`,
         ])
         .orderBy("id", "asc")
         .fetch();
@@ -418,13 +410,28 @@ class OrderController {
    * @param {Response} ctx.response
    * @param {View} ctx.view
    */
+  /**
+   * Search the last order and take the wich date the order was create
+   * @returns only date yyyy-mm-dd
+   */
   async show() {
     const limit = 1;
     const order = await Order.query()
       .orderBy("id", "desc")
       .limit(limit)
       .fetch();
-    return order;
+
+    const lastOrder = JSON.parse(JSON.stringify(order))[0];
+    const dayLastOrder = new Date(lastOrder.date);
+
+    /*Ajustes nas datas */
+    const monthDayLastOrder = ("0" + (dayLastOrder.getMonth() + 1)).slice(-2);
+    const dayDayLastOrder = ("0" + dayLastOrder.getDate()).slice(-2);
+    const yearDayLastOrder = dayLastOrder.getFullYear();
+    const justDate =
+      yearDayLastOrder + "-" + monthDayLastOrder + "-" + dayDayLastOrder;
+
+    return { justDate };
   }
 
   /**
@@ -480,16 +487,6 @@ class OrderController {
     }
     console.log(allOrders);
     return { equity, operation, allOrders };
-  }
-
-  async simplequery({ params, request, response }) {
-    const test = await Database.raw(
-      "SELECT id_user, SUM(lucro) as lucro, SUM(comission) as comission FROM balances WHERE (date_operation BETWEEN '2021-12-03 00:00:00' AND '2021-12-03 23:59:59') group by id_user;"
-    );
-    const test1 = await Database.raw(
-      "SELECT id_user, banca_total, banca, performance FROM balances WHERE (date_operation BETWEEN '2021-12-03 00:00:00' AND '2021-12-03 23:59:59') ORDER BY banca_total DESC LIMIT 15;"
-    );
-    return { test, test1 };
   }
 
   /**

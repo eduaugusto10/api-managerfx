@@ -151,9 +151,14 @@ class BalanceController {
       "SELECT id_user,YEAR(date_operation) as year,MONTH(date_operation) as month, SUM(lucro) as sum FROM balances WHERE id_user= ? group by id_user,year, month;",
       [params.id_user]
     );
+    const deposit = await Database.raw(
+      "SELECT id_user,YEAR(date) as year,MONTH(date) as month, SUM(return_profit) as sum  FROM orders WHERE operation_type=2 and id_user=? group by id_user,year, month;",
+      [params.id_user]
+    );
+    const deposits = deposit[0]
     const balances = balance[0];
     const length = balance[0].length;
-    return { length, balances };
+    return { length, balances, deposits };
   }
   /**
    * Update balance details.
