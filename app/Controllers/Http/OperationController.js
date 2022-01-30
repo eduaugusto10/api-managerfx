@@ -40,7 +40,7 @@ class OperationController {
         .andWhere("ticket", operation.rows[i].ticket)
         .orderBy("id", "desc")
         .fetch();
-        console.log(operations.rows[0])
+
       if (operations.rows[0] != undefined) {
         equity =
           equity +
@@ -49,7 +49,7 @@ class OperationController {
         allOrders.push(operations.rows[0]);
       }
     }
-    console.log(allOrders);
+
     return { equity, operation, allOrders };
   }
   /**

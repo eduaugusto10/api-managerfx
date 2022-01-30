@@ -433,6 +433,15 @@ class OrderController {
 
     return { justDate };
   }
+  async showdeposit({ params }) {
+    const order = await Order.query()
+      .orderBy("id", "desc")
+      .where("operation_type","2")
+      .andWhere("id_user",params.id_user)
+      .fetch();
+
+    return order;
+  }
 
   /**
    * Render a form to update an existing order.
@@ -469,14 +478,14 @@ class OrderController {
       .andWhere("calculated", 1)
       .orderBy("id", "desc")
       .fetch();
-    console.log(operation.rows);
+
     for (let i = 0; i < operation.rows.length; i++) {
       const operations = await Balance.query()
         .where("id_user", params.id_cliente)
         .andWhere("ticket", operation.rows[i].order_id)
         .orderBy("id", "desc")
         .fetch();
-      console.log(operations.rows[0]);
+
       if (operations.rows[0] != undefined) {
         equity =
           equity +
@@ -485,7 +494,7 @@ class OrderController {
         allOrders.push(operations.rows[0]);
       }
     }
-    console.log(allOrders);
+
     return { equity, operation, allOrders };
   }
 

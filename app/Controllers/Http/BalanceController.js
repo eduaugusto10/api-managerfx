@@ -91,7 +91,7 @@ class BalanceController {
       .fetch();
     let balanceCapital = JSON.parse(JSON.stringify(balancesCapital));
     balanceCapital = JSON.parse(JSON.stringify(balanceCapital));
-    console.log(balanceCapital.length);
+
     return { balanceCapital };
   }
 

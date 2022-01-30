@@ -22,10 +22,10 @@ Route.get(
   "OrderController.openoperations"
 );
 
-Route.get("/deposit/:id_cliente?page=:page", "DepositController.show");
 Route.get("/deposit/", "DepositController.index");
 Route.post("/deposit", "DepositController.store");
 
+Route.get("/deposit/:id_user", "OrderController.showdeposit");
 Route.get("/order", "OrderController.show");
 Route.post("/order", "OrderController.store");
 
