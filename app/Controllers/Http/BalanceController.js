@@ -156,7 +156,7 @@ class BalanceController {
       [params.id_user]
     );
     const year = await Database.raw(
-      "SELECT YEAR(date) as year FROM orders WHERE id_user=? group by year;",
+      "SELECT YEAR(date_operation) as year FROM balances WHERE id_user=? group by year;",
       [params.id_user]
     );
     const deposits = deposit[0]
