@@ -122,7 +122,7 @@ class OrderController {
         ) {
           const datas = {
             ticket: 0,
-            date_operation: `${lastDayOrder} 23:59:59`,
+            date_operation: `${lastOrder.justDate} 23:59:59`,
             banca: (parseFloat(balanceJSON[idNumber].banca) - ganhoDia).toFixed(
               3
             ),
@@ -150,7 +150,7 @@ class OrderController {
       for (let i = 0; i < ordensLength; i++) {
         const datas = {
           ticket: 0,
-          date_operation: `${lastDayOrder} 23:59:59`,
+          date_operation: `${lastOrder.justDate} 23:59:59`,
           banca: (
             parseFloat(balanceJSON[numbers].banca) + parseFloat(ganhoDiaAdm)
           ).toFixed(2),
@@ -178,7 +178,7 @@ class OrderController {
         return_profit: 0,
         id_adm: 0,
         comission: 0,
-        date: new Date(`${lastDayOrder} 23:59:59`),
+        date: new Date(`${lastOrder.justDate} 23:59:59`),
         calculated: 0,
         id_user: 0,
         direction: 9,
@@ -433,11 +433,12 @@ class OrderController {
 
     return { justDate };
   }
+
   async showdeposit({ params }) {
     const order = await Order.query()
       .orderBy("id", "desc")
-      .where("operation_type","2")
-      .andWhere("id_user",params.id_user)
+      .where("operation_type", "2")
+      .andWhere("id_user", params.id_user)
       .fetch();
 
     return order;
